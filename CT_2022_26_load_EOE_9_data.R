@@ -64,5 +64,5 @@ result
 # dbClearResult(con)
 # dbDisconnect(con)
 
-
+print("finished loading EOE-9 data.")
 

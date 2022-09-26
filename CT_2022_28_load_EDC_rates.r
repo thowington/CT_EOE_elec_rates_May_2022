@@ -54,7 +54,7 @@ result
 
 dbDisconnect(con)
 
-print('finished.')
+print('finished loading EDC rates.')
 
 
 

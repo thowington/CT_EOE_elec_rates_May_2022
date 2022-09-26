@@ -108,7 +108,7 @@ result <- dbFetch(res)
 print(result)
 
 dbDisconnect(con)
-print("finished.")
+print("finished loading viridian.")
 
 
 

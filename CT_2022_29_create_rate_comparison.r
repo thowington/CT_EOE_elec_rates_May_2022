@@ -79,7 +79,7 @@ rate_comparison <- rate_comparison %>% mutate(rate_difference = billed_rate - st
 rate_comparison_simple <- rate_comparison %>% select(-date_concat)
 dbWriteTable(con, name = Id(schema = 'final_products', table = 'rate_comparison'), value = rate_comparison_simple, overwrite = TRUE, row.names = FALSE)
 filename = "C:/Users/thowi/Documents/consulting_work/CT_EOE_elec_rates_May_2022/output/rate_comparison_simple.csv"
-write_csv(rate_comparison_simple, filename)
+write_delim(x = rate_comparison_simple, file = filename, delim = ";")
 
 ## overpayment by year ----
 overpayment_gross <- rate_comparison %>% filter(overpayment >0) %>%
@@ -160,10 +160,12 @@ overpayment_net <- rate_comparison %>%
 
 payment_comparison_zipcode <- overpayment_gross %>%
   left_join(underpayment_gross, by="zipcode") %>%
-  left_join(overpayment_net, by= "zipcode")
+  left_join(overpayment_net, by= "zipcode") %>%
+  mutate(zipcode = str_trim(zipcode, side = c("both")))
 
 filename = "C:/Users/thowi/Documents/consulting_work/CT_EOE_elec_rates_May_2022/output/overpayment_by_zipcode.csv"
 write_csv(payment_comparison_zipcode, filename)
 
 dbWriteTable(con, name = Id(schema = 'final_products', table = 'payment_comparison_by_zipcode'), value = payment_comparison_zipcode, overwrite = TRUE, row.names = FALSE)
 
+print("finished creating rate comparison.")

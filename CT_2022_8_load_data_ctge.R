@@ -101,7 +101,7 @@ result <- dbFetch(res)
 print(result)
 # dbClearResult(con)
 # dbDisconnect(con)
-print("finished.")
+print("finished loading ctge.")
 
 
 

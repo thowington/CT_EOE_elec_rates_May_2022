@@ -91,6 +91,8 @@ er <- er %>% select(supplier, year_charge, month_charge,
                             contractterm, servicechargesfees, term_fee,
                             num_terminations, edc)
 
+# change the supplier name
+er$supplier <- 'Energy Rewards'
 
 #load
 try(
@@ -108,7 +110,7 @@ result <- dbFetch(res)
 print(result)
 
 dbDisconnect(con)
-print("finished.")
+print("finished loading er.")
 
 
 

@@ -30,8 +30,10 @@ con <- dbConnect(
   password = password1,
   dbname = "ct_2022"
 )
+
 dbSendQuery(con, "create schema q6")
 dbSendQuery(con, "create schema analysis")
 dbSendQuery(con, "create schema final_products")
 dbSendQuery(con, "create schema edc_data")
+dbSendQuery(con, "create schema q7")
 dbDisconnect(con)

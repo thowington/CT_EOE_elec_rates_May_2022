@@ -102,6 +102,8 @@ public <- public %>% select(supplier, year_charge, month_charge,
                             contractterm, servicechargesfees, term_fee,
                             num_terminations, edc)
 
+# change the supplier name
+public$supplier <- 'Public Power'
 
 #load
 try(
@@ -119,7 +121,7 @@ result <- dbFetch(res)
 print(result)
 
 dbDisconnect(con)
-print("finished.")
+print("finished loading public.")
 
 
 

@@ -119,4 +119,4 @@ write_csv(result2, filename)
 
 
 
-print("finished.")
+print("finished creating weighted averages.")

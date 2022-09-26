@@ -98,5 +98,7 @@ result
 # dbClearResult(con)
 # dbDisconnect(con)
 
+print("finished loading cne.")
+
 
 
