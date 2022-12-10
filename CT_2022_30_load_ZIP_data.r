@@ -17,6 +17,7 @@ config_parameters <- ConfigParser$new()
 perms <- config_parameters$read(config_file)
 user1 <- perms$get("user")
 password1 <- perms$get("password")
+project_dir <- perms$get("project_dir")
 
 con <- dbConnect(
   RPostgres::Postgres(),
@@ -104,6 +105,114 @@ write.csv(overpayment_by_zcta, filename)
 
 dbWriteTable(con, name = Id(schema = 'final_products', table = 'payment_comparison_by_zcta'), value = overpayment_by_zcta, overwrite = TRUE, row.names = FALSE)
 
+##  overpayment by ZCTA and year 2017 ----
+overpayment_by_zipcode_2017 <- dbReadTable(con, 
+                                      name = Id(schema = 'final_products', 
+                                                table = 'payment_comparison_zipcode_2017'))
+
+overpayment_by_zcta_2017 <- overpayment_by_zipcode_2017 %>% left_join(crosswalk, 
+                                                            by.x = zipcode,
+                                                            by.y = zipcode) %>%
+  group_by(zcta) %>%
+  summarize(gross_overpayment = sum(gross_overpayment),
+            customers_paying_more = sum(customers_paying_more),
+            gross_underpayment = sum(gross_underpayment),
+            customers_paying_less = sum(customers_paying_less),
+            net_overpayment = sum(net_overpayment),
+            customers_affected = sum(customers_affected))
+
+filename = "C:/Users/thowi/Documents/consulting_work/CT_EOE_elec_rates_May_2022/output/overpayment_by_zcta_2017.csv"
+write.csv(overpayment_by_zcta_2017, filename)
+
+dbWriteTable(con, name = Id(schema = 'final_products', table = 'payment_comparison_by_zcta_2017'), value = overpayment_by_zcta_2017, overwrite = TRUE, row.names = FALSE)
+
+
+##  overpayment by ZCTA and year 2018 ----
+overpayment_by_zipcode_2018 <- dbReadTable(con, 
+                                           name = Id(schema = 'final_products', 
+                                                     table = 'payment_comparison_zipcode_2018'))
+
+overpayment_by_zcta_2018 <- overpayment_by_zipcode_2018 %>% left_join(crosswalk, 
+                                                                      by.x = zipcode,
+                                                                      by.y = zipcode) %>%
+  group_by(zcta) %>%
+  summarize(gross_overpayment = sum(gross_overpayment),
+            customers_paying_more = sum(customers_paying_more),
+            gross_underpayment = sum(gross_underpayment),
+            customers_paying_less = sum(customers_paying_less),
+            net_overpayment = sum(net_overpayment),
+            customers_affected = sum(customers_affected))
+
+filename = paste0(project_dir, "output/overpayment_by_zcta_2018.csv")
+write.csv(overpayment_by_zcta_2018, filename)
+
+dbWriteTable(con, name = Id(schema = 'final_products', table = 'payment_comparison_by_zcta_2018'), value = overpayment_by_zcta_2018, overwrite = TRUE, row.names = FALSE)
+
+##  overpayment by ZCTA and year 2019 ----
+overpayment_by_zipcode_2019 <- dbReadTable(con, 
+                                           name = Id(schema = 'final_products', 
+                                                     table = 'payment_comparison_zipcode_2019'))
+
+overpayment_by_zcta_2019 <- overpayment_by_zipcode_2019 %>% left_join(crosswalk, 
+                                                                      by.x = zipcode,
+                                                                      by.y = zipcode) %>%
+  group_by(zcta) %>%
+  summarize(gross_overpayment = sum(gross_overpayment),
+            customers_paying_more = sum(customers_paying_more),
+            gross_underpayment = sum(gross_underpayment),
+            customers_paying_less = sum(customers_paying_less),
+            net_overpayment = sum(net_overpayment),
+            customers_affected = sum(customers_affected))
+
+filename = paste0(project_dir, "output/overpayment_by_zcta_2019.csv")
+write.csv(overpayment_by_zcta_2019, filename)
+
+dbWriteTable(con, name = Id(schema = 'final_products', table = 'payment_comparison_by_zcta_2019'), value = overpayment_by_zcta_2019, overwrite = TRUE, row.names = FALSE)
+
+
+##  overpayment by ZCTA and year 2020 ----
+overpayment_by_zipcode_2020 <- dbReadTable(con, 
+                                           name = Id(schema = 'final_products', 
+                                                     table = 'payment_comparison_zipcode_2020'))
+
+overpayment_by_zcta_2020 <- overpayment_by_zipcode_2020 %>% left_join(crosswalk, 
+                                                                      by.x = zipcode,
+                                                                      by.y = zipcode) %>%
+  group_by(zcta) %>%
+  summarize(gross_overpayment = sum(gross_overpayment),
+            customers_paying_more = sum(customers_paying_more),
+            gross_underpayment = sum(gross_underpayment),
+            customers_paying_less = sum(customers_paying_less),
+            net_overpayment = sum(net_overpayment),
+            customers_affected = sum(customers_affected))
+
+filename = paste0(project_dir, "output/overpayment_by_zcta_2020.csv")
+write.csv(overpayment_by_zcta_2020, filename)
+
+dbWriteTable(con, name = Id(schema = 'final_products', table = 'payment_comparison_by_zcta_2020'), value = overpayment_by_zcta_2020, overwrite = TRUE, row.names = FALSE)
+
+
+##  overpayment by ZCTA and year 2021 ----
+overpayment_by_zipcode_2021 <- dbReadTable(con, 
+                                           name = Id(schema = 'final_products', 
+                                                     table = 'payment_comparison_zipcode_2021'))
+
+overpayment_by_zcta_2021 <- overpayment_by_zipcode_2021 %>% left_join(crosswalk, 
+                                                                      by.x = zipcode,
+                                                                      by.y = zipcode) %>%
+  group_by(zcta) %>%
+  summarize(gross_overpayment = sum(gross_overpayment),
+            customers_paying_more = sum(customers_paying_more),
+            gross_underpayment = sum(gross_underpayment),
+            customers_paying_less = sum(customers_paying_less),
+            net_overpayment = sum(net_overpayment),
+            customers_affected = sum(customers_affected))
+
+filename = paste0(project_dir, "output/overpayment_by_zcta_2021.csv")
+write.csv(overpayment_by_zcta_2021, filename)
+
+dbWriteTable(con, name = Id(schema = 'final_products', table = 'payment_comparison_by_zcta_2021'), value = overpayment_by_zcta_2021, overwrite = TRUE, row.names = FALSE)
+
 
 
 # join overpayment data to ACS income data
@@ -114,6 +223,8 @@ filename = "C:/Users/thowi/Documents/consulting_work/CT_EOE_elec_rates_May_2022/
 write.csv(overpayment_income_by_zcta, filename)
 
 dbWriteTable(con, name = Id(schema = 'final_products', table = 'payment_comparison_by_zcta_income'), value = overpayment_income_by_zcta, overwrite = TRUE, row.names = FALSE)
+
+
 
 
 
