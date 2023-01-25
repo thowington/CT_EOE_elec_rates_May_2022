@@ -10,6 +10,8 @@ config_parameters <- ConfigParser$new()
 perms <- config_parameters$read(config_file)
 user1 <- perms$get("user")
 password1 <- perms$get("password")
+project_dir <- perms$get("project_dir")
+dbase <- perms$get("this_database")
 
 con <- dbConnect(
   RPostgres::Postgres(),
@@ -17,7 +19,7 @@ con <- dbConnect(
   port = "5432",
   user = user1,
   password = password1,
-  dbname = "ct_2022"
+  dbname = dbase
 )
 
 
@@ -46,7 +48,7 @@ res <- dbSendQuery(con, "create table q6.reliant (
 dbClearResult(res)
 
 # read raw data
-reliant <- read_excel("C:/Users/thowi/Documents/consulting_work/CT_EOE_elec_rates_May_2022/from_EOE/# Summarized EOE-6 Supplier Data/Supplier Summized Data - 5.xlsx",
+reliant <- read_excel(paste0(project_dir, "/from_EOE/# Summarized EOE-6 Supplier Data/Supplier Summized Data - 5.xlsx"),
                      sheet = "Reliant",
                      skip = 0,
                      col_names = TRUE)
@@ -55,15 +57,18 @@ str(reliant)
 #  clean up dates and zip codes
 reliant$year_charge <- substr(reliant$MonthYear, 1,4)
 reliant$month_charge <- substr(reliant$MonthYear,6,7)
-
-reliant %>% filter(CurrentContractStart == "Month-To-Month") %>% mutate(CurrentContractStart = MonthYear) 
 reliant$year_commencement <- substr(reliant$CurrentContractStart, 1,4)
-reliant$month_commencement <- substr(reliant$CurrentContractStart, 6,7)
+reliant$month_commencement<- substr(reliant$CurrentContractStart,6,7)
+
+reliant$year_commencement <-  reliant$year_commencement %>% na_if("Mont") 
+reliant$month_commencement <-  reliant$month_commencement %>% na_if("-T") 
+ 
+
+str(reliant)
 
 reliant$zipcode <- paste0("0",reliant$`ZipCode`)
 reliant <- reliant %>% select(-`ZipCode`)
 
-str(reliant)
 
 
 
@@ -73,6 +78,7 @@ tail(reliant %>% select(`MonthYear`, month_charge, year_charge))
 
 head(reliant %>% select(CurrentContractStart, year_commencement, month_commencement))
 tail(reliant %>% select(CurrentContractStart, year_commencement, month_commencement))
+
 
 # rename columns to match db table
 str(reliant)
@@ -86,6 +92,9 @@ reliant <- reliant %>% rename(supplier = `BrandName`,
                             num_terminations = NumberOfTerminations)
 colnames(reliant) <- tolower(colnames(reliant))
 
+unique(reliant$contractterm)
+reliant$contractterm <- reliant$contractterm %>% str_replace("Month-To-Month","1")
+reliant$contractterm <- as.integer(reliant$contractterm)
 
 # select correct columns
 reliant <- reliant %>% select(supplier, year_charge, month_charge,
@@ -93,9 +102,7 @@ reliant <- reliant %>% select(supplier, year_charge, month_charge,
                             totalkwh, year_commencement, month_commencement,
                             contractterm, servicechargesfees, term_fee,
                             num_terminations, edc)
-unique(reliant$contractterm)
-reliant$contractterm <- reliant$contractterm %>% str_replace("Month-To-Month","1")
-reliant$contractterm <- as.integer(reliant$contractterm)
+
 
 
 #load

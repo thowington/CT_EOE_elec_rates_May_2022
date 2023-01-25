@@ -11,6 +11,8 @@ config_parameters <- ConfigParser$new()
 perms <- config_parameters$read(config_file)
 user1 <- perms$get("user")
 password1 <- perms$get("password")
+project_dir <- perms$get("project_dir")
+dbase <- perms$get("this_database")
 
 con <- dbConnect(
   RPostgres::Postgres(),
@@ -18,7 +20,7 @@ con <- dbConnect(
   port = "5432",
   user = user1,
   password = password1,
-  dbname = "ct_2022"
+  dbname = dbase
 )
 
 # find weighted average rate for all customers
@@ -95,7 +97,7 @@ order by year;")
 res1 <- dbSendQuery(con, "select * from final_products.wtd_avg_rates;")
 result <- dbFetch(res1, n=-1)
 
-filename = "C:/Users/thowi/Documents/consulting_work/CT_EOE_elec_rates_May_2022/output/wtd_avg_rates.csv"
+filename = paste0(project_dir, "/output/wtd_avg_rates.csv")
 write_csv(result, filename)
 
 # find green versus nongreen usage
@@ -114,7 +116,7 @@ order by year;")
 res2 <- dbSendQuery(con, "select * from final_products.usage_by_green_nongreen")
 result2 <- dbFetch(res2, n=-1)
 
-filename = "C:/Users/thowi/Documents/consulting_work/CT_EOE_elec_rates_May_2022/output/usage_green_v_nongreen.csv"
+filename = paste0(project_dir, "/output/usage_green_v_nongreen.csv")
 write_csv(result2, filename)
 
 

@@ -9,6 +9,8 @@ config_parameters <- ConfigParser$new()
 perms <- config_parameters$read(config_file)
 user1 <- perms$get("user")
 password1 <- perms$get("password")
+project_dir <- perms$get("project_dir")
+dbase <- perms$get("this_database")
 
 con <- dbConnect(
   RPostgres::Postgres(),
@@ -16,7 +18,7 @@ con <- dbConnect(
   port = "5432",
   user = user1,
   password = password1,
-  dbname = "ct_2022"
+  dbname = dbase
 )
 
 
@@ -36,7 +38,7 @@ dbSendQuery(con, "create table q9.all (
             ")
 
 # read raw data
-q9_all <- read_excel("C:/Users/thowi/Documents/consulting_work/CT_EOE_elec_rates_May_2022/supplier_responses/EOE_9_consolidation.xlsx",
+q9_all <- read_excel(paste0(project_dir, "/supplier_responses/EOE_9_consolidation.xlsx"),
                      sheet = "Sheet3",
                      skip = 0,
                      col_names = TRUE)

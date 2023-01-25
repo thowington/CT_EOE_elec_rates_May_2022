@@ -16,6 +16,7 @@ perms <- config_parameters$read(config_file)
 user1 <- perms$get("user")
 password1 <- perms$get("password")
 project_dir <- perms$get("project_dir")
+dbase <- perms$get("this_database")
 
 con <- dbConnect(
   RPostgres::Postgres(),
@@ -23,7 +24,7 @@ con <- dbConnect(
   port = "5432",
   user = user1,
   password = password1,
-  dbname = "ct_2022"
+  dbname = dbase
 )
 
 
@@ -40,7 +41,7 @@ dbSendQuery(con, "create table acs.majority_minority (
 
 
 # pct minority table ----
-input_file <- paste0(project_dir, "ACS_data/ACSDP5Y2020.DP05-Data.xlsx")
+input_file <- paste0(project_dir, "/ACS_data/ACSDP5Y2020.DP05-Data.xlsx")
 inf <- read_excel(input_file, sheet = "pct_minority", skip = 2, col_names = FALSE)
 head(inf)
 

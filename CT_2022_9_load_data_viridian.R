@@ -9,6 +9,8 @@ config_parameters <- ConfigParser$new()
 perms <- config_parameters$read(config_file)
 user1 <- perms$get("user")
 password1 <- perms$get("password")
+project_dir <- perms$get("project_dir")
+dbase <- perms$get("this_database")
 
 con <- dbConnect(
   RPostgres::Postgres(),
@@ -16,7 +18,7 @@ con <- dbConnect(
   port = "5432",
   user = user1,
   password = password1,
-  dbname = "ct_2022"
+  dbname = dbase
 )
 
 
@@ -45,7 +47,7 @@ res <- dbSendQuery(con, "create table q6.viridian (
 dbClearResult(res)
 
 # read raw data
-viridian <- read_excel("C:/Users/thowi/Documents/consulting_work/CT_EOE_elec_rates_May_2022/from_EOE/# Summarized EOE-6 Supplier Data/Supplier Summized Data - 2.xlsx",
+viridian <- read_excel(paste0(project_dir, "/from_EOE/# Summarized EOE-6 Supplier Data/Supplier Summized Data - 2.xlsx"),
                      sheet = "Viridian",
                      skip = 0,
                      col_names = TRUE)

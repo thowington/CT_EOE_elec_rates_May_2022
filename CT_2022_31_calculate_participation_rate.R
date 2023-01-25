@@ -16,6 +16,7 @@ perms <- config_parameters$read(config_file)
 user1 <- perms$get("user")
 password1 <- perms$get("password")
 project_dir <- perms$get("project_dir")
+dbase <- perms$get("this_database")
 
 con <- dbConnect(
   RPostgres::Postgres(),
@@ -23,7 +24,7 @@ con <- dbConnect(
   port = "5432",
   user = user1,
   password = password1,
-  dbname = "ct_2022"
+  dbname = dbase
 )
 
 #  no longer using households from ACS as denominator.  Instead using data from EDCs.
@@ -96,7 +97,7 @@ ev_sums_2021 <- ev_resp %>% filter(year == '2021') %>%
 
 
 
-infile = paste0(project_dir, "/UI_responses/EOE-038 UI Attachment 1.xlsx")
+infile = paste0(project_dir, "/UI_responses/EOE-038 UI Attachment 1 Revised.xlsx")
 ui_resp <- read_excel(infile, sheet = "Sheet1")
 ui_resp <- ui_resp %>% rename(zip = `Zip Code`,
                               year = `Year-end`,

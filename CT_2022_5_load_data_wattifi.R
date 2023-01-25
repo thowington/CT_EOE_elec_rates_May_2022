@@ -9,6 +9,8 @@ config_parameters <- ConfigParser$new()
 perms <- config_parameters$read(config_file)
 user1 <- perms$get("user")
 password1 <- perms$get("password")
+project_dir <- perms$get("project_dir")
+dbase <- perms$get("this_database")
 
 con <- dbConnect(
   RPostgres::Postgres(),
@@ -16,7 +18,7 @@ con <- dbConnect(
   port = "5432",
   user = user1,
   password = password1,
-  dbname = "ct_2022"
+  dbname = dbase
 )
 
 
@@ -45,7 +47,7 @@ res <- dbSendQuery(con, "create table q6.wattifi (
 dbClearResult(res)
 
 # read raw data
-wattifi <- read_excel("C:/Users/thowi/Documents/consulting_work/CT_EOE_elec_rates_May_2022/from_EOE/# Summarized EOE-6 Supplier Data/Supplier Summized Data - 1.xlsx",
+wattifi <- read_excel(paste0(project_dir, "/from_EOE/# Summarized EOE-6 Supplier Data/Supplier Summized Data - 1.xlsx"),
                      sheet = "Wattifi",
                      skip = 0,
                      col_names = TRUE)
@@ -58,6 +60,7 @@ wattifi$year_commencement <- substr(wattifi$`Current Contract Commencement Date 
 wattifi$month_commencement <- substr(wattifi$`Current Contract Commencement Date (month-year)`, 6,7)
 wattifi$zipcode <- paste0("0", as.character(wattifi$`Zip Codes`))
 wattifi <- wattifi %>% select(-`Zip Codes`)
+wattifi$contractterm <- wattifi$"Contract Term in Months (i.e. length of contract)"
 
 str(wattifi)
 
@@ -76,7 +79,6 @@ wattifi <- wattifi %>% rename(supplier = `Supplier Name`,
                             billed_rate = Rate,
                             num_customers = `Number of Customers`,
                             totalkwh = `Total kWh`,
-                            contractterm = `Contract Term in Months (i.e. length of contract)`,
                             servicechargesfees = `Service Charges or Other Fees`,
                             term_fee = `Termination Fee`,
                             num_terminations = `# of Terminations`)

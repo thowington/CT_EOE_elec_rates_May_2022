@@ -12,6 +12,8 @@ perms <- config_parameters$read(config_file)
 user1 <- perms$get("user")
 password1 <- perms$get("password")
 project_dir <- perms$get("project_dir")
+project_dir <- perms$get("project_dir")
+dbase <- perms$get("this_database")
 
 con <- dbConnect(
   RPostgres::Postgres(),
@@ -19,7 +21,7 @@ con <- dbConnect(
   port = "5432",
   user = user1,
   password = password1,
-  dbname = "ct_2022"
+  dbname = dbase
 )
 
 res1 <- dbSendQuery(con, "select supplier, 
@@ -30,7 +32,10 @@ res1 <- dbSendQuery(con, "select supplier,
 	zipcode,
 	num_customers,
 	totalkwh,
-	edc
+	edc,
+	year_commencement,
+	month_commencement,
+	contractterm
 from q6.all where edc = 'EV'")
 res_ev <- dbFetch(res1)
 str(res_ev)
@@ -57,7 +62,10 @@ res3 <- dbSendQuery(con, "select supplier,
 	zipcode,
 	num_customers,
 	totalkwh,
-	edc
+	edc,
+	year_commencement,
+	month_commencement,
+	contractterm
 from q6.all where edc = 'UI'")
 res_ui <- dbFetch(res3)
 str(res_ui)
@@ -170,10 +178,10 @@ payment_comparison_supplier_year <- overpayment_gross %>%
   left_join(underpayment_gross, by=c("supplier", "year_charge")) %>%
   left_join(overpayment_net, by=c("supplier", "year_charge"))
 
-filename = paste0(project_dir, "/output/overpayment_by_supplier_and year.csv")
+filename = paste0(project_dir, "/output/overpayment_by_supplier_and_year.csv")
 write_csv(payment_comparison_supplier_year, filename)
 
-dbWriteTable(con, name = Id(schema = 'final_products', table = 'payment_comparison_by_supplier_and year'), value = payment_comparison_supplier_year, overwrite = TRUE, row.names = FALSE)
+dbWriteTable(con, name = Id(schema = 'final_products', table = 'payment_comparison_by_supplier_and_year'), value = payment_comparison_supplier_year, overwrite = TRUE, row.names = FALSE)
 
 # average premium by supplier and year ----
 overpayment_net <- rate_comparison %>% 
@@ -183,6 +191,7 @@ overpayment_net <- rate_comparison %>%
             total_kwh = sum(totalkwh),
             avg_premium = sum(overpayment)/sum(totalkwh)) %>%
   select(supplier, year_charge, net_overpayment, bills_rendered, total_kwh, avg_premium)
+
 filename = paste0(project_dir, "/output/avg_premium_by_supplier_and year.csv")
 write_csv(overpayment_net, filename)
 
@@ -331,5 +340,29 @@ write_csv(premium_distribution, filename)
 
 dbWriteTable(con, name = Id(schema = 'final_products', table = 'premiums_distribution_2021'), value = premium_distribution, overwrite = TRUE, row.names = FALSE)
 
+
+
+## savings / overpayment by year with average savings per bill ----
+overpayment_gross <- rate_comparison %>% filter(overpayment >0) %>%
+  group_by(year_charge) %>%
+  summarize(customers_paying_more =sum(num_customers),
+            avg_per_kWh = sum(overpayment) / sum(totalkwh),
+            ave_per_bill_over = sum(overpayment)/sum(num_customers)) %>%
+  select(year_charge, customers_paying_more, avg_per_kWh, ave_per_bill_over)
+
+underpayment_gross <- rate_comparison %>% filter(overpayment <=0) %>%
+  group_by(year_charge) %>%
+  summarize(customers_paying_less =sum(num_customers),
+            avg_per_kWh = sum(overpayment) / sum(totalkwh),
+            ave_per_bill_under = sum(overpayment)/sum(num_customers)) %>%
+  select(year_charge, customers_paying_less, avg_per_kWh, ave_per_bill_under)
+
+payment_comparison <- underpayment_gross %>%
+  left_join(overpayment_gross, by="year_charge") 
+
+payment_comparison
+
+filename = paste0(project_dir, "/output/savings_ovepayment_by_year.csv")
+write_csv(payment_comparison, filename)
 
 print("finished creating rate comparison.")

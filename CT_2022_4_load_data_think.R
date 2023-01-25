@@ -10,6 +10,8 @@ config_parameters <- ConfigParser$new()
 perms <- config_parameters$read(config_file)
 user1 <- perms$get("user")
 password1 <- perms$get("password")
+project_dir <- perms$get("project_dir")
+dbase <- perms$get("this_database")
 
 con <- dbConnect(
   RPostgres::Postgres(),
@@ -17,7 +19,7 @@ con <- dbConnect(
   port = "5432",
   user = user1,
   password = password1,
-  dbname = "ct_2022"
+  dbname = dbase
 )
 
 
@@ -46,7 +48,7 @@ res <- dbSendQuery(con, "create table q6.think (
 dbClearResult(res)
 
 # read raw data
-think <- read_excel("C:/Users/thowi/Documents/consulting_work/CT_EOE_elec_rates_May_2022/from_EOE/# Summarized EOE-6 Supplier Data/Supplier Summized Data - 1.xlsx",
+think <- read_excel(paste0(project_dir, "/from_EOE/# Summarized EOE-6 Supplier Data/Supplier Summized Data - 1.xlsx"),
                      sheet = "Think Energy",
                      skip = 0,
                      col_names = TRUE)
@@ -72,8 +74,8 @@ unique(think$comm_date)
 
 think$year_charge <- paste0("20",substr(think$date_exp, 4,5))
 think$month_charge <- substr(think$date_exp,1,2)
-think$year_commencement <- substr(think$comm_date, 1,4)
-think$month_commencement <- substr(think$comm_date, 6,7)
+think$year_commencement <- paste0('20',substr(think$comm_date, 4,5))
+think$month_commencement <- substr(think$comm_date, 1,2)
 think$zipcode <- paste0("0", as.character(think$`ZipCode`))
 think <- think %>% select(-`ZipCode`)
 think$ContractTerm <- think$ContractTerm %>% str_replace(" Months","") %>% str_replace(" Month","")

@@ -9,6 +9,8 @@ config_parameters <- ConfigParser$new()
 perms <- config_parameters$read(config_file)
 user1 <- perms$get("user")
 password1 <- perms$get("password")
+project_dir <- perms$get("project_dir")
+dbase <- perms$get("this_database")
 
 con <- dbConnect(
   RPostgres::Postgres(),
@@ -16,7 +18,7 @@ con <- dbConnect(
   port = "5432",
   user = user1,
   password = password1,
-  dbname = "ct_2022"
+  dbname = dbase
 )
 
 
@@ -43,7 +45,7 @@ dbSendQuery(con, "create table q6.ctge (
             ")
 
 # read raw data
-ctge <- read_excel("C:/Users/thowi/Documents/consulting_work/CT_EOE_elec_rates_May_2022/from_EOE/# Summarized EOE-6 Supplier Data/Supplier Summized Data - 2.xlsx",
+ctge <- read_excel(paste0(project_dir, "/from_EOE/# Summarized EOE-6 Supplier Data/Supplier Summized Data - 2.xlsx"),
                      sheet = "CTG&E",
                      skip = 0,
                      col_names = TRUE)
@@ -56,7 +58,7 @@ ctge$year_commencement <- substr(ctge$`Current Contract Commencement Date (month
 ctge$month_commencement <- substr(ctge$`Current Contract Commencement Date (month year)`, 6,7)
 ctge$zipcode <- paste0("0", as.character(ctge$`Zip Code`))
 ctge <- ctge %>% select(-`Zip Code`)
-
+ctge$contractterm <- as.integer(ctge$`Contract Term in Months (i.e., length of contract)`)
 
 #str(ctge)
 
@@ -68,7 +70,7 @@ tail(ctge %>% select(`Month-Year`,year_charge , month_charge))
 head(ctge %>% select(`Current Contract Commencement Date (month year)`,year_commencement , month_commencement))
 tail(ctge %>% select(`Current Contract Commencement Date (month year)`,year_commencement , month_commencement))
 
-ctge$contractterm <- as.integer(ctge$`Contract Term in Months (i.e., length of contract)`)
+
 
 # rename columns to match db table
 colnames(ctge) <- tolower(colnames(ctge))
@@ -100,7 +102,7 @@ res <- dbSendQuery(con, "select count(*) rec_count,
 result <- dbFetch(res)
 print(result)
 # dbClearResult(con)
-# dbDisconnect(con)
+dbDisconnect(con)
 print("finished loading ctge.")
 
 

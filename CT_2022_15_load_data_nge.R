@@ -10,6 +10,8 @@ config_parameters <- ConfigParser$new()
 perms <- config_parameters$read(config_file)
 user1 <- perms$get("user")
 password1 <- perms$get("password")
+project_dir <- perms$get("project_dir")
+dbase <- perms$get("this_database")
 
 con <- dbConnect(
   RPostgres::Postgres(),
@@ -17,7 +19,7 @@ con <- dbConnect(
   port = "5432",
   user = user1,
   password = password1,
-  dbname = "ct_2022"
+  dbname = dbase
 )
 
 
@@ -46,7 +48,7 @@ res <- dbSendQuery(con, "create table q6.nge (
 dbClearResult(res)
 
 # read raw data
-nge <- read_excel("C:/Users/thowi/Documents/consulting_work/CT_EOE_elec_rates_May_2022/from_EOE/# Summarized EOE-6 Supplier Data/Supplier Summized Data - 3.xlsx",
+nge <- read_excel(paste0(project_dir, "/from_EOE/# Summarized EOE-6 Supplier Data/Supplier Summized Data - 3.xlsx"),
                      sheet = "NGE",
                      skip = 0,
                      col_names = TRUE)
@@ -102,8 +104,8 @@ nge <- nge %>% select(supplier, year_charge, month_charge,
                             contractterm, servicechargesfees, term_fee,
                             num_terminations, edc)
 
-# contractterm has some NAs.  Here I assume that these contracts are ongoing, still in force.
-nge$contractterm <- nge$contractterm %>% str_replace("NA","99")
+# contractterm has some NAs.  Here I assume that these contracts are month-to-month.
+nge$contractterm <- nge$contractterm %>% str_replace("NA","1")
 nge$contractterm <- as.integer(nge$contractterm)
 
 

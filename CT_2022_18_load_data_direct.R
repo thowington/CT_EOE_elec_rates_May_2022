@@ -10,6 +10,8 @@ config_parameters <- ConfigParser$new()
 perms <- config_parameters$read(config_file)
 user1 <- perms$get("user")
 password1 <- perms$get("password")
+project_dir <- perms$get("project_dir")
+dbase <- perms$get("this_database")
 
 con <- dbConnect(
   RPostgres::Postgres(),
@@ -17,7 +19,7 @@ con <- dbConnect(
   port = "5432",
   user = user1,
   password = password1,
-  dbname = "ct_2022"
+  dbname = dbase
 )
 
 
@@ -46,7 +48,7 @@ res <- dbSendQuery(con, "create table q6.direct (
 dbClearResult(res)
 
 # read raw data
-direct <- read_excel("C:/Users/thowi/Documents/consulting_work/CT_EOE_elec_rates_May_2022/from_EOE/# Summarized EOE-6 Supplier Data/Supplier Summized Data - 4.xlsx",
+direct <- read_excel(paste0(project_dir, "/from_EOE/# Summarized EOE-6 Supplier Data/Supplier Summized Data - 4.xlsx"),
                      sheet = "Direct Energy",
                      skip = 0,
                      col_names = TRUE)
@@ -104,8 +106,8 @@ direct <- direct %>% select(supplier, year_charge, month_charge,
                             num_terminations, edc)
 
 
-# replace some NULL values
-direct$contractterm <- direct$contractterm %>% str_replace("NULL", "99")
+# replace some NULL values to indicate month-to-month / no contract
+direct$contractterm <- direct$contractterm %>% str_replace("NULL", "1")
 direct$contractterm <- as.integer(direct$contractterm)
 
 

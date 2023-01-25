@@ -17,6 +17,7 @@ perms <- config_parameters$read(config_file)
 user1 <- perms$get("user")
 password1 <- perms$get("password")
 project_dir <- perms$get("project_dir")
+dbase <- perms$get("this_database")
 
 con <- dbConnect(
   RPostgres::Postgres(),
@@ -24,7 +25,7 @@ con <- dbConnect(
   port = "5432",
   user = user1,
   password = password1,
-  dbname = "ct_2022"
+  dbname = dbase
 )
 
 
@@ -92,7 +93,7 @@ inf <- inf %>% rename(supplier = `SUPPLIER NAME`,
   select(supplier, year, amenity, alleged_value, num_redeemed)
 
 #  correct hard to read records
-inf[which(inf$amenity == '$75 and ongoing free weekend charging (up to 250kwh)'),]$alleged_value <- "75"
+inf[which(inf$amenity == '$75 and ongoing free weekend charging (up to 250kwh)'),]$alleged_value <- "180"
 inf[which(inf$amenity == 'Hulu subscription'),]$alleged_value <- "5.99"
 inf[which(inf$amenity == '5% of 12 month kwh expenditure' & inf$year == '2019'),]$alleged_value <- "66.80"
 inf[which(inf$amenity == '5% of 12 month kwh expenditure' & inf$year == '2020'),]$alleged_value <- "54.00"
@@ -182,8 +183,8 @@ inf <- inf %>% mutate(total_value_redeemed = ifelse(is.na(total_value_redeemed) 
 sum(inf$total_value_redeemed)
 dbWriteTable(con, name = Id(schema = 'q7', table = 'all'), value = inf, append = TRUE, row.names = FALSE)
 
-# Energy Rewards / Everyday Energy
-input_file <- paste0(project_dir, "supplier_responses/ER/2022.07.19- Energy Rewards Interrogatory Attachments.xlsx")
+# Energy Rewards / Everyday Energy ----
+input_file <- paste0(project_dir, "supplier_responses/ER/Supplemental EE EOE Tables 7.22.22.xlsx")
 inf <- read_excel(input_file, sheet = "Table 2 (EOE-7)", skip = 4, col_names = TRUE)
 #inf
 #colnames(inf)
@@ -485,7 +486,7 @@ order by year
 amenity_table <- dbFetch(res1)
 amenity_table
 
-filename = paste0(project_dir,"output/","amenity_summary_by_year.csv")
+filename = paste0(project_dir,"/output/","amenity_summary_by_year.csv")
 write.csv(amenity_table, filename, row.names = FALSE)
 
 
@@ -546,7 +547,7 @@ amentity_table_by_supplier_final <- rbind(amenity_table_by_supplier, amenity_tab
 
 amentity_table_by_supplier_final
 
-filename = paste0(project_dir,"output/","amenity_table_by_supplier.csv")
+filename = paste0(project_dir,"/output/","amenity_table_by_supplier.csv")
 write.csv(amentity_table_by_supplier_final, filename, row.names = FALSE)
 
 

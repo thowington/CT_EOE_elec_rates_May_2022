@@ -1,0 +1,65 @@
+setwd("C:/Users/thowi/Documents/consulting_work/CT_EOE_elec_rates_May_2022/code")
+
+print("Running all scripts")
+
+print("Running CT_2022_1_create_database.r")
+#source("CT_2022_0_create_database.r")
+# source("CT_2022_1_create_schemas.R")
+# source("CT_2022_2_load_data_cne.R")
+# source("CT_2022_3_load_data_mega.R")
+# 
+# print("Running CT_2022_4_load_data_think.R")
+# source("CT_2022_4_load_data_think.R")
+# source("CT_2022_5_load_data_wattifi.R")
+# source("CT_2022_6_load_data_xoom.R")
+# source("CT_2022_7_load_data_ambit.R")
+# 
+# print("Running CT_2022_8_load_data_ctge.R")
+# source("CT_2022_8_load_data_ctge.R")
+# source("CT_2022_9_load_data_viridian.R")
+# source("CT_2022_10_load_data_public.R")
+# source("CT_2022_11_load_data_er.R")
+# 
+# print("Running CT_2022_12_load_data_residents.R")
+# source("CT_2022_12_load_data_residents.R")
+# source("CT_2022_13_load_data_townsquare.R")
+# source("CT_2022_14_load_data_major.R")
+# source("CT_2022_15_load_data_nge.R")
+# 
+# print("Running CT_2022_16_load_data_starion.R")
+# source("CT_2022_16_load_data_starion.R")
+# source("CT_2022_17_load_data_atlantic.R")
+# source("CT_2022_18_load_data_direct.R")
+# source("CT_2022_19_load_data_energyplus.R")
+# 
+# print("Running CT_2022_20_load_data_spark.R")
+# source("CT_2022_20_load_data_spark.R")
+# source("CT_2022_21_load_data_nap.R")
+# source("CT_2022_22_load_data_reliant.R")
+# source("CT_2022_23_load_data_verde.R")
+# 
+# print("Running CT_2022_24_load_data_clearview.R")
+# source("CT_2022_24_load_data_clearview.R")
+# source("CT_2022_25_aggregate_q6_data.r")
+source("CT_2022_26_load_EOE_9_data.R")
+source("CT_2022_27_create_wtd_avg_rates.r")
+
+print("Running CT_2022_28_load_EDC_rates.r")
+source("CT_2022_28_load_EDC_rates.r")
+source("CT_2022_29_create_rate_comparison.r")
+source("CT_2022_30_load_ZIP_data.r")
+source("CT_2022_31_calculate_participation_rate.R")
+
+print("Running CT_2022_32_load_amenity_data.R")
+source("CT_2022_32_load_amenity_data.R")
+source("CT_2022_33_majority_minority.r")
+source("CT_2022_34_overpayment_per_kwh.r")
+source("CT_2022_35_load_pct_low_english.r")
+
+print("Running CT_2022_36_overpayment_by_ZCTA_and_income_group.r")
+source("CT_2022_36_overpayment_by_ZCTA_and_income_group.r")
+source("CT_2022_37_overpayment_by_demographic_groups.R")
+source("CT_2022_38_load_population_by_zcta.R")
+source("CT_2022_39_consider_contractterms")
+
+print("Finished running all scripts")

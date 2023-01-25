@@ -10,6 +10,8 @@ config_parameters <- ConfigParser$new()
 perms <- config_parameters$read(config_file)
 user1 <- perms$get("user")
 password1 <- perms$get("password")
+project_dir <- perms$get("project_dir")
+dbase <- perms$get("this_database")
 
 con <- dbConnect(
   RPostgres::Postgres(),
@@ -17,7 +19,7 @@ con <- dbConnect(
   port = "5432",
   user = user1,
   password = password1,
-  dbname = "ct_2022"
+  dbname = dbase
 )
 
 
@@ -46,7 +48,7 @@ res <- dbSendQuery(con, "create table q6.xoom (
 dbClearResult(res)
 
 # read raw data
-xoom <- read_excel("C:/Users/thowi/Documents/consulting_work/CT_EOE_elec_rates_May_2022/from_EOE/# Summarized EOE-6 Supplier Data/Supplier Summized Data - 1.xlsx",
+xoom <- read_excel(paste0(project_dir, "/from_EOE/# Summarized EOE-6 Supplier Data/Supplier Summized Data - 1.xlsx"),
                      sheet = "Xoom",
                      skip = 0,
                      col_names = TRUE)
@@ -72,8 +74,8 @@ unique(xoom$comm_date)
 
 xoom$year_charge <- paste0("20",substr(xoom$date_exp, 4,5))
 xoom$month_charge <- substr(xoom$date_exp,1,2)
-xoom$year_commencement <- substr(xoom$comm_date, 1,4)
-xoom$month_commencement <- substr(xoom$comm_date, 6,7)
+xoom$year_commencement <- paste0('20',substr(xoom$comm_date,4,5))
+xoom$month_commencement <- substr(xoom$comm_date, 1,2)
 xoom$zipcode <- paste0("0", as.character(xoom$`ZIP_CODE`))
 xoom <- xoom %>% select(-`ZIP_CODE`)
 xoom$ContractTerm <- as.integer(xoom$CONTRACT_TERM)

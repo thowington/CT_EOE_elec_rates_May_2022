@@ -10,6 +10,8 @@ config_parameters <- ConfigParser$new()
 perms <- config_parameters$read(config_file)
 user1 <- perms$get("user")
 password1 <- perms$get("password")
+project_dir <- perms$get("project_dir")
+dbase <- perms$get("this_database")
 
 con <- dbConnect(
   RPostgres::Postgres(),
@@ -17,7 +19,7 @@ con <- dbConnect(
   port = "5432",
   user = user1,
   password = password1,
-  dbname = "ct_2022"
+  dbname = dbase
 )
 
 
@@ -46,7 +48,7 @@ res <- dbSendQuery(con, "create table q6.townsquare (
 dbClearResult(res)
 
 # read raw data
-townsquare <- read_excel("C:/Users/thowi/Documents/consulting_work/CT_EOE_elec_rates_May_2022/from_EOE/# Summarized EOE-6 Supplier Data/Supplier Summized Data - 3.xlsx",
+townsquare <- read_excel(paste0(project_dir, "/from_EOE/# Summarized EOE-6 Supplier Data/Supplier Summized Data - 3.xlsx"),
                      sheet = "Town Square",
                      skip = 0,
                      col_names = TRUE)
@@ -68,8 +70,7 @@ townsquare$commence_date <- townsquare$`Current Contract Commencement Date` %>% 
 townsquare$year_charge <- paste0("20",substr(townsquare$date_exp, 4,5))
 townsquare$month_charge <- substr(townsquare$date_exp,1,2)
 townsquare$year_commencement <- paste0("20",substr(townsquare$commence_date, 4,5))
-townsquare$year_commencement <- str_replace(townsquare$year_commencement, "20NA", "NA")
-unique(townsquare$year_commencement)
+townsquare$year_commencement <- townsquare$year_commencement %>% na_if("20NA")
 townsquare$month_commencement <- substr(townsquare$commence_date, 1,2)
 townsquare$zipcode <- townsquare$`Zip Code`
 townsquare <- townsquare %>% select(-`Zip Code`)

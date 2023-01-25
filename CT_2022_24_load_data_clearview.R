@@ -11,6 +11,8 @@ config_parameters <- ConfigParser$new()
 perms <- config_parameters$read(config_file)
 user1 <- perms$get("user")
 password1 <- perms$get("password")
+project_dir <- perms$get("project_dir")
+dbase <- perms$get("this_database")
 
 con <- dbConnect(
   RPostgres::Postgres(),
@@ -18,7 +20,7 @@ con <- dbConnect(
   port = "5432",
   user = user1,
   password = password1,
-  dbname = "ct_2022"
+  dbname = dbase
 )
 
 
@@ -47,7 +49,7 @@ res <- dbSendQuery(con, "create table q6.clearview (
 dbClearResult(res)
 
 # read raw data
-clearview <- read_excel("C:/Users/thowi/Documents/consulting_work/CT_EOE_elec_rates_May_2022/from_EOE/# Summarized EOE-6 Supplier Data/Supplier Summized Data - 5.xlsx",
+clearview <- read_excel(paste0(project_dir, "/from_EOE/# Summarized EOE-6 Supplier Data/Supplier Summized Data - 5.xlsx"),
                      sheet = "Clearview",
                      skip = 0,
                      col_names = TRUE)
@@ -72,11 +74,11 @@ clearview$date_comm  <- clearview$`Current Contract Commencement Date (month yea
 clearview$year_commencement <- substr(clearview$date_comm, 4,7)
 clearview$month_commencement <- substr(clearview$date_comm, 1,2)
 
+clearview$year_commencement <- clearview$year_commencement %>% na_if("L")
+clearview$month_commencement <- clearview$month_commencement %>% na_if("NU")
+
 clearview$zipcode <- paste0("0",clearview$`ZipCode`)
 clearview <- clearview %>% select(-`ZipCode`)
-
-str(clearview)
-
 
 
 # quick check dates
@@ -97,6 +99,9 @@ clearview <- clearview %>% rename(supplier = `Supplier Name`,
                             term_fee = `Termination Fee`,
                             num_terminations = `# of Terminations`)
 colnames(clearview) <- tolower(colnames(clearview))
+
+clearview$contractterm <- clearview$contractterm %>% str_replace("NULL", "1")
+clearview$contractterm <- as.integer(clearview$contractterm)
 
 
 # select correct columns

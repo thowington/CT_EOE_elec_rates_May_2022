@@ -10,6 +10,8 @@ config_parameters <- ConfigParser$new()
 perms <- config_parameters$read(config_file)
 user1 <- perms$get("user")
 password1 <- perms$get("password")
+project_dir <- perms$get("project_dir")
+dbase <- perms$get("this_database")
 
 con <- dbConnect(
   RPostgres::Postgres(),
@@ -17,7 +19,7 @@ con <- dbConnect(
   port = "5432",
   user = user1,
   password = password1,
-  dbname = "ct_2022"
+  dbname = dbase
 )
 
 
@@ -34,7 +36,7 @@ dbSendQuery(con, "create table edc_data.edc_rates (
             ")
 
 # read raw data
-edc_rates <- read_excel("C:/Users/thowi/Documents/consulting_work/CT_EOE_elec_rates_May_2022/from_EOE/2 Supplier and EDC Rates Combined - vs2.xlsx",
+edc_rates <- read_excel(paste0(project_dir, "/from_EOE/2 Supplier and EDC Rates Combined - vs2.xlsx"),
                      sheet = "EDC Rates",
                      skip = 0,
                      col_names = TRUE)
@@ -44,7 +46,7 @@ edc_rates$month <- str_pad(edc_rates$month, width=2, side="left", pad="0")
 edc_rates$date_concat <- paste0(edc_rates$year, edc_rates$month)
 
 
-dbWriteTable(con, name = Id(schema = 'edc_data', table = 'edc_rates'), value = edc_rates, append = TRUE, row.names = FALSE)
+dbWriteTable(con, name = Id(schema = 'edc_data', table = 'edc_rates'), value = edc_rates, overwrite = TRUE, row.names = FALSE)
 
 
 #check totals

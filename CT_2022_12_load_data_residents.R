@@ -10,6 +10,8 @@ config_parameters <- ConfigParser$new()
 perms <- config_parameters$read(config_file)
 user1 <- perms$get("user")
 password1 <- perms$get("password")
+project_dir <- perms$get("project_dir")
+dbase <- perms$get("this_database")
 
 con <- dbConnect(
   RPostgres::Postgres(),
@@ -17,7 +19,7 @@ con <- dbConnect(
   port = "5432",
   user = user1,
   password = password1,
-  dbname = "ct_2022"
+  dbname = dbase
 )
 
 
@@ -46,7 +48,7 @@ res <- dbSendQuery(con, "create table q6.residents (
 dbClearResult(res)
 
 # read raw data
-residents <- read_excel("C:/Users/thowi/Documents/consulting_work/CT_EOE_elec_rates_May_2022/from_EOE/# Summarized EOE-6 Supplier Data/Supplier Summized Data - 3.xlsx",
+residents <- read_excel(paste0(project_dir, "/from_EOE/# Summarized EOE-6 Supplier Data/Supplier Summized Data - 3.xlsx"),
                      sheet = "Residents",
                      skip = 0,
                      col_names = TRUE)
@@ -62,8 +64,8 @@ residents$date_exp <- residents$`Month-Year` %>% str_replace("January","01") %>%
 
 residents$year_charge <- paste0("20",substr(residents$date_exp, 4,5))
 residents$month_charge <- substr(residents$date_exp,1,2)
-residents$year_commencement <- "NA"
-residents$month_commencement <- "NA"
+residents$year_commencement <- NA
+residents$month_commencement <- NA
 residents$zipcode <- paste0("0", as.character(residents$`Zip Code`))
 residents <- residents %>% select(-`Zip Code`)
 

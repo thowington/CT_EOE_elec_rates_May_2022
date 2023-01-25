@@ -10,6 +10,8 @@ config_parameters <- ConfigParser$new()
 perms <- config_parameters$read(config_file)
 user1 <- perms$get("user")
 password1 <- perms$get("password")
+project_dir <- perms$get("project_dir")
+dbase <- perms$get("this_database")
 
 con <- dbConnect(
   RPostgres::Postgres(),
@@ -17,7 +19,7 @@ con <- dbConnect(
   port = "5432",
   user = user1,
   password = password1,
-  dbname = "ct_2022"
+  dbname = dbase
 )
 
 
@@ -46,7 +48,7 @@ res <- dbSendQuery(con, "create table q6.nap (
 dbClearResult(res)
 
 # read raw data
-nap <- read_excel("C:/Users/thowi/Documents/consulting_work/CT_EOE_elec_rates_May_2022/from_EOE/# Summarized EOE-6 Supplier Data/Supplier Summized Data - 5.xlsx",
+nap <- read_excel(paste0(project_dir, "/from_EOE/# Summarized EOE-6 Supplier Data/Supplier Summized Data - 5.xlsx"),
                      sheet = "NAP",
                      skip = 0,
                      col_names = TRUE)
@@ -109,6 +111,7 @@ nap2 <- nap2 %>% select(supplier, year_charge, month_charge,
                             contractterm, servicechargesfees, term_fee,
                             num_terminations, edc)
 
+# replace NULLS with 1 to ondicate month-to-month contract
 nap2$contractterm <- nap2$contractterm %>% str_replace("NULL","1")
 nap2$contractterm <- as.integer(nap2$contractterm)
 
